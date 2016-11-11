@@ -34,18 +34,51 @@ volunteer$Group.Count[519] <- 11
 volunteer$Group.Count[520] <- 14
 volunteer$Group.Count[1248] <- 9
 volunteer$Group.Count[1249] <- 22 
-         
+
+#Note: With data cleaning, I was unable to remove old values entirely. Instead they say 0
+
 # Clean PrevVol so only Y or N remains
-volunteer %>% 
-  mutate(`PrevVol2` = NA) %>% 
-  mutate(`PrevVol2` = ifelse(PrevVol %in% c('y', 'Y'), 'Y', `PrevVol2`)) %>%  
-  mutate(`PrevVol2` = ifelse(PreVol %in% c('n', 'N'), 'N', `PrevVol2`)) %>% 
-  mutate(`PreVol2` = ifelse(PreVol %in% c('', '1', '3', 'b', 'B', 'g', 'm', 'M')))
+volunteer$PrevVol[volunteer$PrevVol == 'y'] <- 'Y'
+volunteer$PrevVol[volunteer$PrevVol == 'n'] <- 'N'
+volunteer$PrevVol[!(volunteer$PrevVol %in% c('Y', 'N'))] <- NA
 
-volunteer$PrevVol2 <- ifwhich(volunteer$PrevVol=='y') = 'Y'
-volunteer$PrevVol[which(volunteer$PrevVol == 'n')] = 'N'
-volunteer$PrevVol[which(!(volunteer$PrevVol %in% c('Y', 'N')))]= NA
-volunteer
 
-# Clean Recruited to remove blanks
-volunteer$Recruited[which(volunteer$Recruited %in% c('', 'blank', 'Blank'))] = NA
+# Clean Recruited to remove blanks and consolidate same categories
+volunteer$Recruited[grepl('AA Observer', volunteer$Recruited)] <-'Newspaper (e.g. A2Observer, Current)'
+volunteer$Recruited[grepl('flier', volunteer$Recruited) | grepl('street', volunteer$Recruited)] <- 'Sign/poster  (from NAP)'
+volunteer$Recruited[volunteer$Recruited %in% c('website', 'Website (City or NAP)')] <- 'Internet (e.g. website, social media, annarbor.com)'
+volunteer$Recruited[volunteer$Recruited %in% c('', ' ', 'blank', 'Blank')] <- NA
+volunteer$Recruited[grepl('membership', volunteer$Recruited)] <- 'Group/Organization contact or membership'
+
+
+# Clean RecruitDetail to remove blanks and consolidate same categories
+volunteer$RecruitDetail[volunteer$RecruitDetail %in% c('', ' ')] <- NA 
+volunteer$RecruitDetail[grepl('Emerson', volunteer$RecruitDetail)] <- 'Emerson_Middle_School'
+volunteer$RecruitDetail[grepl('eslie', volunteer$RecruitDetail)] <- 'LeslieScienceCenter'
+volunteer$RecruitDetail[grepl('iker', volunteer$RecruitDetail)] <- "MichiganMountainBiker'sAssociation"
+volunteer$RecruitDetail[grepl('echnical', volunteer$RecruitDetail) | grepl('echincal', volunteer$RecruitDetail)] <- 'Washtenaw_Technical_Middle_College'
+volunteer$RecruitDetail[grepl('enior', volunteer$RecruitDetail)] <- "AnnArborSeniorCenter"
+volunteer$RecruitDetail[grepl('ndian', volunteer$RecruitDetail)] <- "UM_IndianAmericanStudentAssociation"
+volunteer$RecruitDetail[grepl('oncordia', volunteer$RecruitDetail)] <- "ConcordiaUniversity"
+volunteer$RecruitDetail[grepl('VC', volunteer$RecruitDetail) | grepl('yvc', volunteer$RecruitDetail)] <- 'YVC'
+volunteer$RecruitDetail[volunteer$RecruitDetail == 'huronriverdays'] <- 'HuronRiverDays'
+volunteer$RecruitDetail[grepl('ision', volunteer$RecruitDetail)] <- 'EMU_Vision'
+volunteer$RecruitDetail[grepl('ioneer', volunteer$RecruitDetail)] <- 'PioneerHighSchool'
+volunteer$RecruitDetail[grepl('emuC', volunteer$RecruitDetail)] <- 'EMUCircleK'
+volunteer$RecruitDetail[volunteer$RecruitDetail == 'Circle K'] <- 'CircleK'
+volunteer$RecruitDetail[grepl('ityS', volunteer$RecruitDetail)] <- 'UM_CommunityScholars'
+volunteer$RecruitDetail[volunteer$RecruitDetail == 'unitedway'] <- 'UnitedWay'
+volunteer$RecruitDetail[grepl('Skyline', volunteer$RecruitDetail)] <- 'SkylineHighSchool'
+volunteer$RecruitDetail[volunteer$RecruitDetail == 'interact' | volunteer$RecruitDetail == 'InteractHuron'] <- 'Interact'
+volunteer$RecruitDetail[volunteer$RecruitDetail =='UMSI'] <- 'UM_SchoolofInformation'
+volunteer$RecruitDetail[volunteer$RecruitDetail =='patrol200cubscouts'] <- 'Patrol200CubScouts'
+volunteer$RecruitDetail[grepl('toyota', volunteer$RecruitDetail)] <- 'ToyotaboshokuAmerica'
+volunteer$RecruitDetail[grepl('SBDNORTHAMERICA', volunteer$RecruitDetail)] <- 'SBDNORTHAMERICA'
+volunteer$RecruitDetail[grepl('Indeed', volunteer$RecruitDetail)] <- 'WomenIndeed'
+volunteer$RecruitDetail[volunteer$RecruitDetail == 'pack22'] <- "Pack22"
+volunteer$RecruitDetail[grepl('um_lawSchool', volunteer$RecruitDetail)] <- 'UM_LawSchool'
+volunteer$RecruitDetail[grepl('Audubon', volunteer$RecruitDetail)] <- 'Washtenaw Audubon'
+volunteer$RecruitDetail[grepl('StPaul', volunteer$RecruitDetail)] <- 'StPaulLutheranChurch'
+volunteer$RecruitDetail[volunteer$RecruitDetail == 'Boy Scout Pack 131'] <- "BoyScoutPack131"
+
+write.csv(volunteer, "napVolunteerData.csv")
