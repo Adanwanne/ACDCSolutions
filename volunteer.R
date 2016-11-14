@@ -7,10 +7,10 @@ library(dplyr)
 str(volunteer)
 head(volunteer)
 colnames(volunteer)
+summary(volunteer)
 View(volunteer)
 
 # Remove extraneous columns
-summary(volunteer)
 volunteer <- volunteer[,c(1:12)]
 
 # Volunteer PeopleIDs are not all unique
@@ -80,5 +80,8 @@ volunteer$RecruitDetail[grepl('um_lawSchool', volunteer$RecruitDetail)] <- 'UM_L
 volunteer$RecruitDetail[grepl('Audubon', volunteer$RecruitDetail)] <- 'Washtenaw Audubon'
 volunteer$RecruitDetail[grepl('StPaul', volunteer$RecruitDetail)] <- 'StPaulLutheranChurch'
 volunteer$RecruitDetail[volunteer$RecruitDetail == 'Boy Scout Pack 131'] <- "BoyScoutPack131"
+
+
+# Which parks are most popular by hour and volunteer count?
 
 write.csv(volunteer, "napVolunteerData.csv")
